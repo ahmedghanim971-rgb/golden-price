@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+<meta charset="UTF-8">
+<title>بناتي الغاليات</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@600;800&family=Amiri:wght@700&display=swap" rel="stylesheet">
+
+<style>
+body{
+    font-family:'Cairo', Arial, sans-serif;
+    direction:rtl;
+    background:#eaeaea;
+    display:flex;
+    justify-content:center;
+    align-items:flex-start;
+    padding-top:20px;
+}
+
+.box{
+    width:296mm;
+    height:420mm;
+    background:#ffffff;
+    border-radius:24px;
+    padding:40px;
+    box-shadow:0 0 20px rgba(0,0,0,0.2);
+    box-sizing:border-box;
+    text-align:center;
+}
+
+h2{
+    font-family:'Amiri', serif;
+    color:#7a5c1e;
+    margin-bottom:25px;
+    font-size:110px;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+}
+
+th{
+    background:#d4af37;
+    color:white;
+    padding:20px;
+    font-size:30px;
+}
+
+td{
+    padding:20px;
+    font-size:30px;
+    border:1px solid #ddd;
+}
+
+td:first-child{ background:#f5edd7; font-weight:bold; }
+td:nth-child(2){ background:#eef5f3; font-weight:bold; }
+td:nth-child(3){ background:#faf6ec; }
+
+.price-line{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:12px;
+}
+
+.rate, .egp-total, .date-box{
+    margin-top:15px;
+    padding:20px;
+    border-radius:12px;
+    font-size:30px;
+    font-weight:bold;
+}
+
+.rate{ background:#eef5f3; color:#205c4b; }
+.egp-total{ background:#f1eef8; color:#4a2d82; }
+.date-box{ background:#faf6ec; color:#444; }
+
+.dua{
+    margin-top:25px;
+    font-size:28px;
+    font-weight:bold;
+    color:#444;
+}
+</style>
+</head>
+
+<body>
+
+<div class="box">
+
+<h2>بناتي الغاليات</h2>
+
+<table>
+<tr>
+    <th>عدد الجرامات</th>
+    <th>سعر الجرام (درهم)</th>
+    <th>الإجمالي (درهم)</th>
+</tr>
+
+<tr>
+    <td>110</td>
+    <td rowspan="2">
+        <div class="price-line">
+            <span id="priceAED">...</span>
+        </div>
+    </td>
+    <td id="totalAED1">...</td>
+</tr>
+
+<tr>
+    <td>31.1</td>
+    <td id="totalAED2">...</td>
+</tr>
+
+</table>
+
+<div class="egp-total" id="totalAEDSum">
+    المجموع بالدرهم: ...
+</div>
+
+<div class="rate">
+    <div class="price-line">
+        <span id="rateInfo">سعر الدرهم مقابل الجنيه: ...</span>
+    </div>
+</div>
+
+<div class="egp-total" id="totalEGP">الإجمالي بالجنيه المصري: ...</div>
+
+<div class="date-box" id="todayBox"></div>
+
+<div class="dua">اللهم بارك في رزقهم</div>
+
+</div>
+
+<script>
+const grams1 = 110;
+const grams2 = 31.1;
+const USD_TO_AED = 3.67;
+
+let gramAED = 0, aedToEgp = 0;
+
+/* التاريخ والوقت */
+function updateDateTime(){
+    const d = new Date();
+    document.getElementById("todayBox").innerText =
+        "اليوم: " + d.toLocaleDateString('ar-EG',{weekday:'long'}) +
+        " — التاريخ: " + d.toLocaleDateString('ar-EG') +
+        " — الوقت: " + d.toLocaleTimeString('ar-EG');
+}
+updateDateTime();
+setInterval(updateDateTime, 1000);
+
+/* الذهب */
+async function loadGold(){
+    const res = await fetch("https://www.goldapi.io/api/XAU/USD",{
+        headers:{ "x-access-token":"goldapi-6zggsmjohcqi8-io" }
+    });
+    const data = await res.json();
+
+    gramAED = (data.price / 31.1035) * USD_TO_AED;
+
+    const total1 = gramAED * grams1;
+    const total2 = gramAED * grams2;
+    const totalSum = total1 + total2;
+
+    document.getElementById("priceAED").innerText = gramAED.toFixed(2);
+    document.getElementById("totalAED1").innerText = total1.toFixed(2);
+    document.getElementById("totalAED2").innerText = total2.toFixed(2);
+    document.getElementById("totalAEDSum").innerText =
+        "المجموع بالدرهم: " + totalSum.toFixed(2);
+
+    calcEGP();
+}
+
+/* الدرهم */
+async function loadFX(){
+    const res = await fetch("https://open.er-api.com/v6/latest/AED");
+    const data = await res.json();
+    aedToEgp = data.rates.EGP;
+
+    document.getElementById("rateInfo").innerText =
+        "سعر الدرهم مقابل الجنيه اليوم: " + aedToEgp.toFixed(2);
+
+    calcEGP();
+}
+
+/* حساب الجنيه */
+function calcEGP(){
+    if(gramAED && aedToEgp){
+        const totalEGP =
+            (gramAED * grams1 + gramAED * grams2) * aedToEgp;
+
+        document.getElementById("totalEGP").innerText =
+            "الإجمالي بالجنيه المصري: " + totalEGP.toFixed(2);
+    }
+}
+
+/* تحميل أولي */
+loadGold();
+loadFX();
+</script>
+
+</body>
+</html>
