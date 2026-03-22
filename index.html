@@ -140,11 +140,16 @@
 
     async function fetchMarketData() {
         try {
-            const goldResponse = await fetch("https://www.goldapi.io/api/XAU/AED", {
+            // ✅ التعديل هنا فقط
+            const goldResponse = await fetch("https://www.goldapi.io/api/XAU/USD", {
                 headers: { "x-access-token": GOLD_API_KEY }
             });
+
             const goldData = await goldResponse.json();
-            currentGoldPriceAED = goldData.price_gram_24; 
+
+            const USD_TO_AED = 3.67;
+            currentGoldPriceAED = (goldData.price / 31.1035) * USD_TO_AED;
+
             document.getElementById('goldPrice').innerText = currentGoldPriceAED.toFixed(2);
 
             const rateResponse = await fetch("https://api.exchangerate-api.com/v4/latest/AED");
@@ -193,7 +198,6 @@
         fetchMarketData();
         calculateAll();
 
-        // تحديث تلقائي كل دقيقة
         setInterval(fetchMarketData, 60000);
     });
 
