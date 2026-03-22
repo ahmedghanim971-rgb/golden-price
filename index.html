@@ -7,7 +7,6 @@
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
 
 <style>
-    /* الإعدادات العامة والخلفية البيج */
     html, body { background-color: #f5f5dc !important; margin: 0; padding: 0; }
     body { font-family: 'Cairo', sans-serif; direction: rtl; padding: 10px 5px; display: flex; justify-content: center; }
     .container { width: 100%; max-width: 210mm; background: #ffffff; padding: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); box-sizing: border-box; min-height: 100vh; border-radius: 12px; }
@@ -21,11 +20,9 @@
     th, td { border: 1px solid #b0c4de; padding: 10px 2px; text-align: center; font-size: 10.5px; word-wrap: break-word; }
     th { background: #1e3c72; color: white; font-weight: bold; }
     
-    /* ألوان الخلايا */
     td { background: #e1f5fe; }
     .platform-name { background: #bbdefb !important; font-weight: bold; width: 18%; }
     
-    /* الخانات القابلة للتعديل باللون الأخضر */
     .editable-paid { 
         color: #27ae60 !important; 
         font-weight: bold; 
@@ -35,12 +32,10 @@
     }
 
     .debt-color { color: #e74c3c !important; font-weight: bold; }
-    .gold-value { color: #d4af37 !important; font-weight: bold; } /* لون ذهبي */
+    .gold-value { color: #d4af37 !important; font-weight: bold; }
     .egp-value { color: #2c3e50 !important; font-weight: bold; }
 
     tfoot td { background: #bbdefb !important; color: #000 !important; font-weight: bold; }
-
-    .status-msg { font-size: 9px; text-align: center; color: #888; margin-top: 5px; }
 
     @media screen and (max-width: 600px) {
         th, td { font-size: 9.5px; padding: 8px 1px; }
@@ -60,31 +55,31 @@
             <thead>
                 <tr>
                     <th>البائع</th>
-                    <th>حصص</th>
-                    <th>شراء</th>
-                    <th>مدفوع</th>
-                    <th>متبقي</th>
-                    <th>شهري</th>
-                    <th>أقساط</th>
+                    <th>عدد الحصص</th>
+                    <th>سعر الشراء</th>
+                    <th>المدفوع</th>
+                    <th>المتبقي</th>
+                    <th>قسط شهري</th>
+                    <th>عدد الاقساط</th>
                 </tr>
             </thead>
             <tbody>
                 <tr>
-                    <td class="platform-name">SAFE</td>
+                    <td class="platform-name">تطبيق SAFE</td>
                     <td>4</td>
                     <td>200,000</td>
                     <td style="color:#27ae60; font-weight:bold;">200,000</td>
                     <td colspan="3" style="background:#e8f5e9 !important; color:#27ae60; font-weight:bold;">مسددة بالكامل ✅</td>
                 </tr>
                 <tr>
-                    <td class="platform-name">SAFE</td>
+                    <td class="platform-name">تطبيق SAVE</td>
                     <td>2</td>
                     <td>100,000</td>
                     <td style="color:#27ae60; font-weight:bold;">100,000</td>
                     <td colspan="3" style="background:#e8f5e9 !important; color:#27ae60; font-weight:bold;">مسددة بالكامل ✅</td>
                 </tr>
                 <tr>
-                    <td class="platform-name">فريدة</td>
+                    <td class="platform-name">شركة فريدة</td>
                     <td>1</td>
                     <td>133,544</td>
                     <td contenteditable="true" id="faridaPaid" class="editable-paid">0</td>
@@ -113,10 +108,10 @@
             <thead>
                 <tr>
                     <th>عدد الجرامات</th>
-                    <th>سعر الجرام (AED)</th>
-                    <th>الإجمالي (AED)</th>
-                    <th>أقساط متبقية</th>
-                    <th>الإجمالي (EGP)</th>
+                    <th>سعر الجرام (بالدرهم)</th>
+                    <th>الإجمالي (بالدرهم)</th>
+                    <th>أقساط متبقية بالدرهم</th>
+                    <th>الإجمالي الممتلك (بالجنيه)</th>
                 </tr>
             </thead>
             <tbody>
@@ -124,12 +119,11 @@
                     <td style="font-weight:bold;">141.1</td>
                     <td id="goldPrice" class="gold-value">جاري التحميل..</td>
                     <td id="totalGoldAED" style="font-weight:bold;">0</td>
-                    <td contenteditable="true" id="goldDebts" class="editable-paid">0</td>
+                    <td contenteditable="true" id="goldDebts" class="editable-paid debt-color">0</td>
                     <td id="totalGoldEGP" class="egp-value">جاري التحميل..</td>
                 </tr>
             </tbody>
         </table>
-        <p class="status-msg" id="apiStatus">تحديث تلقائي للأسعار عبر API...</p>
     </div>
 </div>
 
@@ -144,32 +138,26 @@
         document.getElementById('currentDateTime').innerText = now.toLocaleDateString('ar-EG', options);
     }
 
-    // جلب البيانات من الـ API
     async function fetchMarketData() {
         try {
-            // 1. جلب سعر الذهب (عيار 24 بالدرهم)
             const goldResponse = await fetch("https://www.goldapi.io/api/XAU/AED", {
-                headers: { "x-access-token": GOLD_API_KEY, "Content-Type": "application/json" }
+                headers: { "x-access-token": GOLD_API_KEY }
             });
             const goldData = await goldResponse.json();
             currentGoldPriceAED = goldData.price_gram_24; 
             document.getElementById('goldPrice').innerText = currentGoldPriceAED.toFixed(2);
 
-            // 2. جلب سعر صرف الدرهم مقابل الجنيه
             const rateResponse = await fetch("https://api.exchangerate-api.com/v4/latest/AED");
             const rateData = await rateResponse.json();
             currentExchangeRate = rateData.rates.EGP;
 
             calculateAll();
-            document.getElementById('apiStatus').innerText = "تم تحديث أسعار الذهب والصرف الآن ✅";
         } catch (error) {
-            document.getElementById('apiStatus').innerText = "فشل التحديث.. تأكد من مفتاح الـ API والإنترنت ❌";
             console.error(error);
         }
     }
 
     function calculateAll() {
-        // حسابات العقارات
         const buyFarida = 133544;
         const installFarida = 9455;
         let paidFarida = Number(document.getElementById("faridaPaid").innerText.replace(/,/g, '')) || 0;
@@ -182,7 +170,6 @@
         document.getElementById("sumRemain").innerText = remainFarida.toLocaleString();
         document.getElementById("sumMonths").innerText = monthsFarida;
 
-        // حسابات الذهب
         const goldGrams = 141.1;
         if (currentGoldPriceAED > 0) {
             const totalAED = goldGrams * currentGoldPriceAED;
@@ -194,19 +181,20 @@
             }
         }
 
-        // حفظ البيانات محلياً
         localStorage.setItem("faridaPaid_v2", document.getElementById("faridaPaid").innerText);
         localStorage.setItem("goldDebts_v2", document.getElementById("goldDebts").innerText);
     }
 
     window.addEventListener("load", () => {
         updateDateTime();
-        // استعادة البيانات المحفوظة
         if(localStorage.getItem("faridaPaid_v2")) document.getElementById("faridaPaid").innerText = localStorage.getItem("faridaPaid_v2");
         if(localStorage.getItem("goldDebts_v2")) document.getElementById("goldDebts").innerText = localStorage.getItem("goldDebts_v2");
         
         fetchMarketData();
         calculateAll();
+
+        // تحديث تلقائي كل دقيقة
+        setInterval(fetchMarketData, 60000);
     });
 
     document.addEventListener("input", calculateAll);
