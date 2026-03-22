@@ -2,204 +2,214 @@
 <html lang="ar">
 <head>
 <meta charset="UTF-8">
-<title>بناتي الغاليات</title>
-
-<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@600;800&family=Amiri:wght@700&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>متابعة الاستثمارات والذهب</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
 
 <style>
-body{
-    font-family:'Cairo', Arial, sans-serif;
-    direction:rtl;
-    background:#eaeaea;
-    display:flex;
-    justify-content:center;
-    align-items:flex-start;
-    padding-top:20px;
-}
+    /* الإعدادات العامة والخلفية البيج */
+    html, body { background-color: #f5f5dc !important; margin: 0; padding: 0; }
+    body { font-family: 'Cairo', sans-serif; direction: rtl; padding: 10px 5px; display: flex; justify-content: center; }
+    .container { width: 100%; max-width: 210mm; background: #ffffff; padding: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); box-sizing: border-box; min-height: 100vh; border-radius: 12px; }
+    
+    h1 { text-align: center; color: #1e3c72; font-size: 20px; margin-bottom: 5px; }
+    h2 { font-size: 16px; color: #1e3c72; text-align: center; margin-top: 25px; margin-bottom: 10px; border-bottom: 2px solid #bbdefb; padding-bottom: 5px; }
+    #currentDateTime { text-align: center; font-size: 12px; color: #777; margin-bottom: 20px; }
 
-.box{
-    width:296mm;
-    height:420mm;
-    background:#ffffff;
-    border-radius:24px;
-    padding:40px;
-    box-shadow:0 0 20px rgba(0,0,0,0.2);
-    box-sizing:border-box;
-    text-align:center;
-}
+    .table-container { width: 100%; overflow-x: auto; margin-bottom: 20px; }
+    table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+    th, td { border: 1px solid #b0c4de; padding: 10px 2px; text-align: center; font-size: 10.5px; word-wrap: break-word; }
+    th { background: #1e3c72; color: white; font-weight: bold; }
+    
+    /* ألوان الخلايا */
+    td { background: #e1f5fe; }
+    .platform-name { background: #bbdefb !important; font-weight: bold; width: 18%; }
+    
+    /* الخانات القابلة للتعديل باللون الأخضر */
+    .editable-paid { 
+        color: #27ae60 !important; 
+        font-weight: bold; 
+        background: #fff !important; 
+        border: 2px solid #1e3c72 !important; 
+        outline: none;
+    }
 
-h2{
-    font-family:'Amiri', serif;
-    color:#7a5c1e;
-    margin-bottom:25px;
-    font-size:110px;
-}
+    .debt-color { color: #e74c3c !important; font-weight: bold; }
+    .gold-value { color: #d4af37 !important; font-weight: bold; } /* لون ذهبي */
+    .egp-value { color: #2c3e50 !important; font-weight: bold; }
 
-table{
-    width:100%;
-    border-collapse:collapse;
-}
+    tfoot td { background: #bbdefb !important; color: #000 !important; font-weight: bold; }
 
-th{
-    background:#d4af37;
-    color:white;
-    padding:20px;
-    font-size:30px;
-}
+    .status-msg { font-size: 9px; text-align: center; color: #888; margin-top: 5px; }
 
-td{
-    padding:20px;
-    font-size:30px;
-    border:1px solid #ddd;
-}
-
-td:first-child{ background:#f5edd7; font-weight:bold; }
-td:nth-child(2){ background:#eef5f3; font-weight:bold; }
-td:nth-child(3){ background:#faf6ec; }
-
-.price-line{
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    gap:12px;
-}
-
-.rate, .egp-total, .date-box{
-    margin-top:15px;
-    padding:20px;
-    border-radius:12px;
-    font-size:30px;
-    font-weight:bold;
-}
-
-.rate{ background:#eef5f3; color:#205c4b; }
-.egp-total{ background:#f1eef8; color:#4a2d82; }
-.date-box{ background:#faf6ec; color:#444; }
-
-.dua{
-    margin-top:25px;
-    font-size:28px;
-    font-weight:bold;
-    color:#444;
-}
+    @media screen and (max-width: 600px) {
+        th, td { font-size: 9.5px; padding: 8px 1px; }
+        h1 { font-size: 18px; }
+    }
 </style>
 </head>
 
 <body>
+<div class="container">
+    <h1>📊 لوحة متابعة الاستثمارات</h1>
+    <p id="currentDateTime"></p>
 
-<div class="box">
+    <h2>🏢 الاستثمارات العقارية</h2>
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>البائع</th>
+                    <th>حصص</th>
+                    <th>شراء</th>
+                    <th>مدفوع</th>
+                    <th>متبقي</th>
+                    <th>شهري</th>
+                    <th>أقساط</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="platform-name">SAFE</td>
+                    <td>4</td>
+                    <td>200,000</td>
+                    <td style="color:#27ae60; font-weight:bold;">200,000</td>
+                    <td colspan="3" style="background:#e8f5e9 !important; color:#27ae60; font-weight:bold;">مسددة بالكامل ✅</td>
+                </tr>
+                <tr>
+                    <td class="platform-name">SAFE</td>
+                    <td>2</td>
+                    <td>100,000</td>
+                    <td style="color:#27ae60; font-weight:bold;">100,000</td>
+                    <td colspan="3" style="background:#e8f5e9 !important; color:#27ae60; font-weight:bold;">مسددة بالكامل ✅</td>
+                </tr>
+                <tr>
+                    <td class="platform-name">فريدة</td>
+                    <td>1</td>
+                    <td>133,544</td>
+                    <td contenteditable="true" id="faridaPaid" class="editable-paid">0</td>
+                    <td id="faridaRemain" class="debt-color">0</td>
+                    <td id="faridaInstall" class="debt-color">9,455</td>
+                    <td id="faridaMonths" class="debt-color">0</td>
+                </tr>
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td>الإجمالي</td>
+                    <td id="sumShares">7</td>
+                    <td id="sumBuy">433,544</td>
+                    <td id="sumPaid" style="color:#27ae60 !important;">0</td>
+                    <td id="sumRemain" class="debt-color">0</td>
+                    <td id="sumInstall" class="debt-color">9,455</td>
+                    <td id="sumMonths" class="debt-color">0</td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
 
-<h2>بناتي الغاليات</h2>
-
-<table>
-<tr>
-    <th>عدد الجرامات</th>
-    <th>سعر الجرام (درهم)</th>
-    <th>الإجمالي (درهم)</th>
-</tr>
-
-<tr>
-    <td>110</td>
-    <td rowspan="2">
-        <div class="price-line">
-            <span id="priceAED">...</span>
-        </div>
-    </td>
-    <td id="totalAED1">...</td>
-</tr>
-
-<tr>
-    <td>31.1</td>
-    <td id="totalAED2">...</td>
-</tr>
-
-</table>
-
-<div class="egp-total" id="totalAEDSum">
-    المجموع بالدرهم: ...
-</div>
-
-<div class="rate">
-    <div class="price-line">
-        <span id="rateInfo">سعر الدرهم مقابل الجنيه: ...</span>
+    <h2>✨ استثمار الذهب</h2>
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>عدد الجرامات</th>
+                    <th>سعر الجرام (AED)</th>
+                    <th>الإجمالي (AED)</th>
+                    <th>أقساط متبقية</th>
+                    <th>الإجمالي (EGP)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td style="font-weight:bold;">141.1</td>
+                    <td id="goldPrice" class="gold-value">جاري التحميل..</td>
+                    <td id="totalGoldAED" style="font-weight:bold;">0</td>
+                    <td contenteditable="true" id="goldDebts" class="editable-paid">0</td>
+                    <td id="totalGoldEGP" class="egp-value">جاري التحميل..</td>
+                </tr>
+            </tbody>
+        </table>
+        <p class="status-msg" id="apiStatus">تحديث تلقائي للأسعار عبر API...</p>
     </div>
 </div>
 
-<div class="egp-total" id="totalEGP">الإجمالي بالجنيه المصري: ...</div>
-
-<div class="date-box" id="todayBox"></div>
-
-<div class="dua">اللهم بارك في رزقهم</div>
-
-</div>
-
 <script>
-const grams1 = 110;
-const grams2 = 31.1;
-const USD_TO_AED = 3.67;
+    const GOLD_API_KEY = "goldapi-k4besmjr70o72-io";
+    let currentGoldPriceAED = 0;
+    let currentExchangeRate = 0;
 
-let gramAED = 0, aedToEgp = 0;
-
-/* التاريخ والوقت */
-function updateDateTime(){
-    const d = new Date();
-    document.getElementById("todayBox").innerText =
-        "اليوم: " + d.toLocaleDateString('ar-EG',{weekday:'long'}) +
-        " — التاريخ: " + d.toLocaleDateString('ar-EG') +
-        " — الوقت: " + d.toLocaleTimeString('ar-EG');
-}
-updateDateTime();
-setInterval(updateDateTime, 1000);
-
-/* الذهب */
-async function loadGold(){
-    const res = await fetch("https://www.goldapi.io/api/XAU/USD",{
-        headers:{ "x-access-token":"goldapi-6zggsmjohcqi8-io" }
-    });
-    const data = await res.json();
-
-    gramAED = (data.price / 31.1035) * USD_TO_AED;
-
-    const total1 = gramAED * grams1;
-    const total2 = gramAED * grams2;
-    const totalSum = total1 + total2;
-
-    document.getElementById("priceAED").innerText = gramAED.toFixed(2);
-    document.getElementById("totalAED1").innerText = total1.toFixed(2);
-    document.getElementById("totalAED2").innerText = total2.toFixed(2);
-    document.getElementById("totalAEDSum").innerText =
-        "المجموع بالدرهم: " + totalSum.toFixed(2);
-
-    calcEGP();
-}
-
-/* الدرهم */
-async function loadFX(){
-    const res = await fetch("https://open.er-api.com/v6/latest/AED");
-    const data = await res.json();
-    aedToEgp = data.rates.EGP;
-
-    document.getElementById("rateInfo").innerText =
-        "سعر الدرهم مقابل الجنيه اليوم: " + aedToEgp.toFixed(2);
-
-    calcEGP();
-}
-
-/* حساب الجنيه */
-function calcEGP(){
-    if(gramAED && aedToEgp){
-        const totalEGP =
-            (gramAED * grams1 + gramAED * grams2) * aedToEgp;
-
-        document.getElementById("totalEGP").innerText =
-            "الإجمالي بالجنيه المصري: " + totalEGP.toFixed(2);
+    function updateDateTime() {
+        const now = new Date();
+        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+        document.getElementById('currentDateTime').innerText = now.toLocaleDateString('ar-EG', options);
     }
-}
 
-/* تحميل أولي */
-loadGold();
-loadFX();
+    // جلب البيانات من الـ API
+    async function fetchMarketData() {
+        try {
+            // 1. جلب سعر الذهب (عيار 24 بالدرهم)
+            const goldResponse = await fetch("https://www.goldapi.io/api/XAU/AED", {
+                headers: { "x-access-token": GOLD_API_KEY, "Content-Type": "application/json" }
+            });
+            const goldData = await goldResponse.json();
+            currentGoldPriceAED = goldData.price_gram_24; 
+            document.getElementById('goldPrice').innerText = currentGoldPriceAED.toFixed(2);
+
+            // 2. جلب سعر صرف الدرهم مقابل الجنيه
+            const rateResponse = await fetch("https://api.exchangerate-api.com/v4/latest/AED");
+            const rateData = await rateResponse.json();
+            currentExchangeRate = rateData.rates.EGP;
+
+            calculateAll();
+            document.getElementById('apiStatus').innerText = "تم تحديث أسعار الذهب والصرف الآن ✅";
+        } catch (error) {
+            document.getElementById('apiStatus').innerText = "فشل التحديث.. تأكد من مفتاح الـ API والإنترنت ❌";
+            console.error(error);
+        }
+    }
+
+    function calculateAll() {
+        // حسابات العقارات
+        const buyFarida = 133544;
+        const installFarida = 9455;
+        let paidFarida = Number(document.getElementById("faridaPaid").innerText.replace(/,/g, '')) || 0;
+        let remainFarida = Math.max(0, buyFarida - paidFarida);
+        let monthsFarida = remainFarida > 0 ? Math.ceil(remainFarida / installFarida) : 0;
+
+        document.getElementById("faridaRemain").innerText = remainFarida.toLocaleString();
+        document.getElementById("faridaMonths").innerText = monthsFarida;
+        document.getElementById("sumPaid").innerText = (300000 + paidFarida).toLocaleString();
+        document.getElementById("sumRemain").innerText = remainFarida.toLocaleString();
+        document.getElementById("sumMonths").innerText = monthsFarida;
+
+        // حسابات الذهب
+        const goldGrams = 141.1;
+        if (currentGoldPriceAED > 0) {
+            const totalAED = goldGrams * currentGoldPriceAED;
+            document.getElementById("totalGoldAED").innerText = totalAED.toLocaleString(undefined, {maximumFractionDigits: 2});
+            
+            if (currentExchangeRate > 0) {
+                const totalEGP = totalAED * currentExchangeRate;
+                document.getElementById("totalGoldEGP").innerText = totalEGP.toLocaleString(undefined, {maximumFractionDigits: 0});
+            }
+        }
+
+        // حفظ البيانات محلياً
+        localStorage.setItem("faridaPaid_v2", document.getElementById("faridaPaid").innerText);
+        localStorage.setItem("goldDebts_v2", document.getElementById("goldDebts").innerText);
+    }
+
+    window.addEventListener("load", () => {
+        updateDateTime();
+        // استعادة البيانات المحفوظة
+        if(localStorage.getItem("faridaPaid_v2")) document.getElementById("faridaPaid").innerText = localStorage.getItem("faridaPaid_v2");
+        if(localStorage.getItem("goldDebts_v2")) document.getElementById("goldDebts").innerText = localStorage.getItem("goldDebts_v2");
+        
+        fetchMarketData();
+        calculateAll();
+    });
+
+    document.addEventListener("input", calculateAll);
 </script>
-
 </body>
 </html>
