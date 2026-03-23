@@ -7,35 +7,99 @@
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
 
 <style>
-    html, body { background-color: #f5f5dc !important; margin: 0; padding: 0; }
-    body { font-family: 'Cairo', sans-serif; direction: rtl; padding: 10px 5px; display: flex; justify-content: center; }
-    .container { width: 100%; max-width: 210mm; background: #ffffff; padding: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); box-sizing: border-box; min-height: 100vh; border-radius: 12px; }
+    html, body {
+        background: linear-gradient(135deg, #d4edda, #c3e6cb) !important;
+        margin: 0;
+        padding: 0;
+    }
+
+    body {
+        font-family: 'Cairo', sans-serif;
+        direction: rtl;
+        padding: 10px 5px;
+        display: flex;
+        justify-content: center;
+    }
+
+    .container {
+        width: 100%;
+        max-width: 210mm;
+        background: #ffffff;
+        padding: 15px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        box-sizing: border-box;
+        min-height: 100vh;
+        border-radius: 20px;
+    }
     
     h1 { text-align: center; color: #1e3c72; font-size: 20px; margin-bottom: 5px; }
     h2 { font-size: 16px; color: #1e3c72; text-align: center; margin-top: 25px; margin-bottom: 10px; border-bottom: 2px solid #bbdefb; padding-bottom: 5px; }
     #currentDateTime { text-align: center; font-size: 12px; color: #777; margin-bottom: 20px; }
 
-    .table-container { width: 100%; overflow-x: auto; margin-bottom: 20px; }
-    table { width: 100%; border-collapse: collapse; table-layout: fixed; }
-    th, td { border: 1px solid #b0c4de; padding: 10px 2px; text-align: center; font-size: 10.5px; word-wrap: break-word; }
-    th { background: #1e3c72; color: white; font-weight: bold; }
+    .table-container {
+        width: 100%;
+        overflow-x: auto;
+        margin-bottom: 20px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        border-radius: 12px;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+        table-layout: fixed;
+        border-radius: 12px;
+        overflow: hidden;
+    }
+
+    th {
+        background: linear-gradient(135deg, #007bff, #0056b3);
+        color: white;
+        padding: 10px 2px;
+        text-align: center;
+        font-size: 10.5px;
+        font-weight: bold;
+        border: none;
+    }
     
-    td { background: #e1f5fe; }
-    .platform-name { background: #bbdefb !important; font-weight: bold; width: 18%; }
+    td {
+        background: #d0f0ff;
+        border: 1px solid #bde0fe;
+        padding: 10px 2px;
+        text-align: center;
+        font-size: 10.5px;
+        word-wrap: break-word;
+        transition: 0.2s;
+    }
+
+    tr:hover td {
+        background: #c0e7ff;
+    }
+
+    .platform-name {
+        background: #bde0fe !important;
+        font-weight: bold;
+        width: 18%;
+    }
     
     .editable-paid { 
         color: #27ae60 !important; 
         font-weight: bold; 
-        background: #fff !important; 
-        border: 2px solid #1e3c72 !important; 
+        background: #bde0fe !important;
+        border: 1px solid #b0c4de !important;
         outline: none;
     }
 
     .debt-color { color: #e74c3c !important; font-weight: bold; }
-    .gold-value { color: #d4af37 !important; font-weight: bold; }
+    .gold-value { color: black !important; font-weight: bold; }
     .egp-value { color: #2c3e50 !important; font-weight: bold; }
 
-    tfoot td { background: #bbdefb !important; color: #000 !important; font-weight: bold; }
+    tfoot td {
+        background: #a2d2ff !important;
+        color: #000 !important;
+        font-weight: bold;
+    }
 
     @media screen and (max-width: 600px) {
         th, td { font-size: 9.5px; padding: 8px 1px; }
@@ -130,7 +194,7 @@
 <script>
 const SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSpXigbGbwbDvH-Q6HuhnGxDdprrXFfth0kS0487CLRSxMrg2Id9TSoUSQLoXQz1V2ynG7vu_-FHesv/pub?output=csv";
 
-const GOLD_API_KEY = "goldapi-k4besmjr70o72-io";
+const GOLD_API_KEY = "goldapi-3eqcb8nxsmjnzers6-io";
 let currentGoldPriceAED = 0;
 let currentExchangeRate = 0;
 
@@ -158,16 +222,20 @@ async function fetchSheetData() {
     calculateAll();
 }
 
-async function fetchMarketData() {
-    const goldResponse = await fetch("https://www.goldapi.io/api/XAU/USD", {
-        headers: { "x-access-token": GOLD_API_KEY }
+async function getGoldPriceAED(){
+    const USD_TO_AED = 3.67;
+
+    const res = await fetch("https://www.goldapi.io/api/XAU/USD",{
+        headers:{ "x-access-token": GOLD_API_KEY }
     });
 
-    const goldData = await goldResponse.json();
+    const data = await res.json();
 
-    const USD_TO_AED = 3.67;
-    currentGoldPriceAED = (goldData.price / 31.1035) * USD_TO_AED;
+    return (data.price / 31.1035) * USD_TO_AED;
+}
 
+async function fetchMarketData() {
+    currentGoldPriceAED = await getGoldPriceAED();
     document.getElementById('goldPrice').innerText = currentGoldPriceAED.toFixed(2);
 
     const rateResponse = await fetch("https://api.exchangerate-api.com/v4/latest/AED");
