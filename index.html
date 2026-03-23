@@ -82,7 +82,7 @@
                     <td class="platform-name">شركة فريدة</td>
                     <td>1</td>
                     <td>133,544</td>
-                    <td contenteditable="true" id="faridaPaid" class="editable-paid">0</td>
+                    <td id="faridaPaid" class="editable-paid">0</td>
                     <td id="faridaRemain" class="debt-color">0</td>
                     <td id="faridaInstall" class="debt-color">9,455</td>
                     <td id="faridaMonths" class="debt-color">0</td>
@@ -118,8 +118,8 @@
                 <tr>
                     <td style="font-weight:bold;">141.1</td>
                     <td id="goldPrice" class="gold-value">جاري التحميل..</td>
-                    <td id="totalGoldAED" style="font-weight:bold;">0</td>
-                    <td contenteditable="true" id="goldDebts" class="editable-paid debt-color">0</td>
+                    <td id="totalGoldAED">0</td>
+                    <td id="goldDebts" class="editable-paid debt-color">0</td>
                     <td id="totalGoldEGP" class="egp-value">جاري التحميل..</td>
                 </tr>
             </tbody>
@@ -128,80 +128,91 @@
 </div>
 
 <script>
-    const GOLD_API_KEY = "goldapi-k4besmjr70o72-io";
-    let currentGoldPriceAED = 0;
-    let currentExchangeRate = 0;
+const SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSpXigbGbwbDvH-Q6HuhnGxDdprrXFfth0kS0487CLRSxMrg2Id9TSoUSQLoXQz1V2ynG7vu_-FHesv/pub?output=csv";
 
-    function updateDateTime() {
-        const now = new Date();
-        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-        document.getElementById('currentDateTime').innerText = now.toLocaleDateString('ar-EG', options);
-    }
+const GOLD_API_KEY = "goldapi-k4besmjr70o72-io";
+let currentGoldPriceAED = 0;
+let currentExchangeRate = 0;
 
-    async function fetchMarketData() {
-        try {
-            // ✅ التعديل هنا فقط
-            const goldResponse = await fetch("https://www.goldapi.io/api/XAU/USD", {
-                headers: { "x-access-token": GOLD_API_KEY }
-            });
+function updateDateTime() {
+    const now = new Date();
+    document.getElementById('currentDateTime').innerText = now.toLocaleDateString('ar-EG');
+}
 
-            const goldData = await goldResponse.json();
+async function fetchSheetData() {
+    const res = await fetch(SHEET_URL);
+    const text = await res.text();
 
-            const USD_TO_AED = 3.67;
-            currentGoldPriceAED = (goldData.price / 31.1035) * USD_TO_AED;
+    const rows = text.split("\n").map(r => r.split(","));
+    let data = {};
 
-            document.getElementById('goldPrice').innerText = currentGoldPriceAED.toFixed(2);
-
-            const rateResponse = await fetch("https://api.exchangerate-api.com/v4/latest/AED");
-            const rateData = await rateResponse.json();
-            currentExchangeRate = rateData.rates.EGP;
-
-            calculateAll();
-        } catch (error) {
-            console.error(error);
-        }
-    }
-
-    function calculateAll() {
-        const buyFarida = 133544;
-        const installFarida = 9455;
-        let paidFarida = Number(document.getElementById("faridaPaid").innerText.replace(/,/g, '')) || 0;
-        let remainFarida = Math.max(0, buyFarida - paidFarida);
-        let monthsFarida = remainFarida > 0 ? Math.ceil(remainFarida / installFarida) : 0;
-
-        document.getElementById("faridaRemain").innerText = remainFarida.toLocaleString();
-        document.getElementById("faridaMonths").innerText = monthsFarida;
-        document.getElementById("sumPaid").innerText = (300000 + paidFarida).toLocaleString();
-        document.getElementById("sumRemain").innerText = remainFarida.toLocaleString();
-        document.getElementById("sumMonths").innerText = monthsFarida;
-
-        const goldGrams = 141.1;
-        if (currentGoldPriceAED > 0) {
-            const totalAED = goldGrams * currentGoldPriceAED;
-            document.getElementById("totalGoldAED").innerText = totalAED.toLocaleString(undefined, {maximumFractionDigits: 2});
-            
-            if (currentExchangeRate > 0) {
-                const totalEGP = totalAED * currentExchangeRate;
-                document.getElementById("totalGoldEGP").innerText = totalEGP.toLocaleString(undefined, {maximumFractionDigits: 0});
-            }
-        }
-
-        localStorage.setItem("faridaPaid_v2", document.getElementById("faridaPaid").innerText);
-        localStorage.setItem("goldDebts_v2", document.getElementById("goldDebts").innerText);
-    }
-
-    window.addEventListener("load", () => {
-        updateDateTime();
-        if(localStorage.getItem("faridaPaid_v2")) document.getElementById("faridaPaid").innerText = localStorage.getItem("faridaPaid_v2");
-        if(localStorage.getItem("goldDebts_v2")) document.getElementById("goldDebts").innerText = localStorage.getItem("goldDebts_v2");
-        
-        fetchMarketData();
-        calculateAll();
-
-        setInterval(fetchMarketData, 60000);
+    rows.forEach(row => {
+        const key = row[0]?.trim();
+        const value = Number(row[1]?.trim()) || 0;
+        if (key) data[key] = value;
     });
 
-    document.addEventListener("input", calculateAll);
+    document.getElementById("faridaPaid").innerText = data["farida"] || 0;
+    document.getElementById("goldDebts").innerText = data["gold"] || 0;
+
+    calculateAll();
+}
+
+async function fetchMarketData() {
+    const goldResponse = await fetch("https://www.goldapi.io/api/XAU/USD", {
+        headers: { "x-access-token": GOLD_API_KEY }
+    });
+
+    const goldData = await goldResponse.json();
+
+    const USD_TO_AED = 3.67;
+    currentGoldPriceAED = (goldData.price / 31.1035) * USD_TO_AED;
+
+    document.getElementById('goldPrice').innerText = currentGoldPriceAED.toFixed(2);
+
+    const rateResponse = await fetch("https://api.exchangerate-api.com/v4/latest/AED");
+    const rateData = await rateResponse.json();
+    currentExchangeRate = rateData.rates.EGP;
+
+    calculateAll();
+}
+
+function calculateAll() {
+    const buyFarida = 133544;
+    const installFarida = 9455;
+
+    let paidFarida = Number(document.getElementById("faridaPaid").innerText) || 0;
+    let remainFarida = Math.max(0, buyFarida - paidFarida);
+    let monthsFarida = remainFarida > 0 ? Math.ceil(remainFarida / installFarida) : 0;
+
+    document.getElementById("faridaRemain").innerText = remainFarida.toLocaleString();
+    document.getElementById("faridaMonths").innerText = monthsFarida;
+
+    document.getElementById("sumPaid").innerText = (300000 + paidFarida).toLocaleString();
+    document.getElementById("sumRemain").innerText = remainFarida.toLocaleString();
+    document.getElementById("sumMonths").innerText = monthsFarida;
+
+    const goldGrams = 141.1;
+
+    if (currentGoldPriceAED > 0) {
+        const totalAED = goldGrams * currentGoldPriceAED;
+        document.getElementById("totalGoldAED").innerText = totalAED.toLocaleString();
+
+        if (currentExchangeRate > 0) {
+            const totalEGP = totalAED * currentExchangeRate;
+            document.getElementById("totalGoldEGP").innerText = totalEGP.toLocaleString();
+        }
+    }
+}
+
+window.addEventListener("load", () => {
+    updateDateTime();
+    fetchSheetData();
+    fetchMarketData();
+
+    setInterval(fetchSheetData, 10000);
+    setInterval(fetchMarketData, 60000);
+});
 </script>
 </body>
 </html>
